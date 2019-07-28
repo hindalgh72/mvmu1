@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>All User Details</title>
+    <title>All Notices</title>
     @include('backend/allcss')
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
@@ -24,8 +24,7 @@
                                     <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Role</th>
+                                    <th scope="col">Type</th>
                                     <th scope="col">Edit</th>
                                     <th scope="col">Delete</th>
                                     </tr>
@@ -34,14 +33,13 @@
                                     @php
                                     $id=1
                                     @endphp
-                                    @foreach ($getusers as $user)
+                                    @foreach ($getnotices as $notice)
                                         <tr class="table-active">
                                             <th scope="row">{{$id}}</th>
-                                            <td>{{$user['name']}}</td>
-                                            <td>{{$user['email']}}</td>
-                                            <td>{{$user['user_role']}}</td>
-                                            <td><a href="{{url('/admin/edit-user',$user['user_id'])}}" class="btn btn-primary">edit</a></td>
-                                            <td><a href="{{url('/admin/delete-user',$user['user_id'])}}" class="btn btn-danger">Delete</a></td>
+                                            <td>{{$notice['notice_name']}}</td>
+                                            <td>{{$notice['notice_type_name']}}</td>
+                                            <td><a href="{{url('/admin/edit-notice',$notice['notice_id'])}}" class="btn btn-primary">edit</a></td>
+                                            <td><a href="{{url('/admin/delete-notice',$notice['notice_id'])}}" class="btn btn-danger">Delete</a></td>
                                         </tr>
                                         @php
                                         $id++

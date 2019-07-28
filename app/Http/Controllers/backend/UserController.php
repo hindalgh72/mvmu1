@@ -67,4 +67,69 @@ class UserController extends Controller
         // return $userrole[0]->user_role;
         return view('backend.createuser')->with('userroles',$userroles);
     }
+    public function editpage(){
+        $users = RoleAssign::join('users','users.id','role_assigns.id')
+        ->join('user_role','user_role.id','role_assigns.role_id')
+        ->select('*','role_assigns.id as roleassignid','user_role.id as userroleid')
+        ->where('role_assigns.role_id','>','1')
+        ->get();
+        // dd($users);
+        return view('backend.edituser')->with('getusers', $users);
+    }
+    public function editsingle($id){
+        $users = RoleAssign::join('users','users.id','role_assigns.id')
+        ->join('user_role','user_role.id','role_assigns.role_id')
+        ->select('*','role_assigns.id as roleassignid','user_role.id as userroleid')
+        ->where('role_assigns.user_id','=',$id)
+        ->get();
+        $userroles = UserRole::where('id','>','1')->get();
+        // dd($users[0]);
+        return view('backend.updateuser')->with('user',$users[0])->with('userroles',$userroles);
+    }
+    public function updateuser(Request $request){
+        $data=$request->all();
+        $validator=Validator::make($data,[
+            'name'=>'required|string',
+            'email'=>'required|string|email',
+            'role_id'=>'required|integer',
+            'user_id'=>'required|min:1|integer'
+        ]);
+        
+        if ($validator->fails()) { 
+            return Redirect::back()->withErrors($validator)->withInput();
+        }
+        
+        $user= User::findorfail($data['user_id']);
+        $user->name= $data['name'];
+        $user->email=$data['email'];
+        $user->save();
+
+        
+        $roleid=$data['role_id'];
+        $userrole = RoleAssign::where('user_id',$data['user_id'])->update(['role_id'=>$roleid]);
+        // $userrole->role_id=$roleid;
+        // $userrole->update();
+        return Redirect::back()->with('message','User Updated Succesfully')->with('type','success');
+    }
+    public function updatepass(Request $request){
+        $data=$request->all();
+        $validator=Validator::make($data,[
+            'password'=>'required|string|min:8|confirmed',
+        ]);
+        
+        if ($validator->fails()) { 
+            return Redirect::back()->withErrors($validator)->withInput();
+        }
+        
+        $user= User::findorfail($data['user_id']);
+        $user->password=Hash::make($data['password']);
+        $user->save();
+
+        return Redirect::back()->with('password','Succesfully Password Changed')->with('type','success');
+    }
+    public function delete($id){
+        User::where('id',$id)->delete();
+        RoleAssign::where('user_id',$id)->delete();
+        return Redirect::route('user.editget');
+    }
 }
